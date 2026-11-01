@@ -54,8 +54,8 @@ Pi 하드웨어·OS·Hailo 스택은 확인 완료(`../../AGENTS.md`). 남은 �
 broker는 NAS의 Mosquitto 컨테이너를 쓰고, Pi(`npu-03`)는 Tailscale로 NAS(`silent-nas-ts`)에 접속한다.
 
 - [x] Pi Tailscale 연결 (2026-11-01, 교육장 네트워크에서는 DERP 릴레이 경유)
-- [ ] NAS: tailnet에서 Mosquitto(1883)·HA(8123)에 닿게 하기. 2026-11-01 기준 `silent-nas-ts`의 모든 포트가 닫혀 있음. Tailscale 컨테이너를 host network로 바꾸거나 NAS 패키지 앱 사용
-- [ ] NAS: Tailscale ACL에서 `npu-03` → `silent-nas-ts` 접근 허용 확인
+- [x] NAS: tailnet에서 Mosquitto(1883)·HA(8123)에 닿게 하기 (2026-11-01 재확인: 1883·8123 열림, 직접 연결 약 33ms)
+- [x] NAS: Tailscale ACL에서 `npu-03` → `silent-nas-ts` 접근 허용 확인 (실제 접속으로 확인, 관리 콘솔 정책은 미확인)
 - [ ] NAS: Frigate 전용 MQTT 계정 생성, Pi의 `docker/frigate/.env`(`FRIGATE_MQTT_USER`, `FRIGATE_MQTT_PASSWORD`)에 입력
 - [ ] Pi: `silent-nas-ts:1883` 접속·인증 확인
 - [ ] Pi: `config.yml`의 `mqtt` 활성화(`host: silent-nas-ts`), `frigate/events` 발행 확인
