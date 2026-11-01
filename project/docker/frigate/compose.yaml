@@ -21,12 +21,14 @@ services:
 
   frigate:
     container_name: frigate
+    # HailoRT standard(NPU 단독). NPU 공유(service) 버전은 compose.service.yaml 참고
     build:
       context: .
+      target: standard
       args:
         FRIGATE_VERSION: "0.18.2"
         HAILORT_VERSION: "4.23.0"
-    image: localhost/frigate-hailort4.23:0.18.2
+    image: localhost/frigate-hailort4.23-standard:0.18.2
     restart: unless-stopped
     stop_grace_period: 30s
     depends_on:

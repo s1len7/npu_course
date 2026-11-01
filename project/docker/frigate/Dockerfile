@@ -8,7 +8,25 @@
 # 교체 파일 출처: https://github.com/frigate-nvr/hailort/releases/tag/v4.23.0 (Frigate 팀 빌드)
 
 ARG FRIGATE_VERSION=0.18.2
-FROM ghcr.io/blakeblackshear/frigate:${FRIGATE_VERSION}
+
+# NPU를 다른 프로세스(Hailo Whisper STT)와 함께 쓰려면 HailoRT 멀티프로세스 서비스 지원이 필요하다.
+# Frigate 팀 빌드는 HAILO_BUILD_SERVICE=OFF라 libhailort.so만 같은 버전 소스로 다시 빌드한다.
+# (Frigate 이미지와 같은 Debian 12 기준, Python 바인딩은 libhailort.so를 동적 링크하므로 그대로 둔다)
+FROM debian:12 AS hailort-service-build
+ARG DEBIAN_FRONTEND=noninteractive
+ARG HAILORT_VERSION=4.23.0
+RUN apt-get -qq update \
+    && apt-get -qq install -y build-essential cmake git wget pkg-config >/dev/null \
+    && rm -rf /var/lib/apt/lists/*
+RUN git clone -q --depth 1 --branch "v${HAILORT_VERSION}" https://github.com/hailo-ai/hailort.git /source \
+    && cd /source \
+    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Release -DHAILO_BUILD_SERVICE=1 \
+    && cmake --build build -j "$(nproc)" --config release --target libhailort \
+    && mkdir -p /out \
+    && cp -a build/hailort/libhailort/src/libhailort.so* /out/
+
+# standard: Frigate 팀 HailoRT 4.23.0 (NPU 단독 사용)
+FROM ghcr.io/blakeblackshear/frigate:${FRIGATE_VERSION} AS standard
 
 # Frigate 원본 Dockerfile과 같은 방식으로 PEP 668(시스템 Python 보호) 제약을 빌드 중에만 해제
 ARG PIP_BREAK_SYSTEM_PACKAGES=1
@@ -33,3 +51,15 @@ RUN set -eux; \
     rm -f /tmp/hailort.tar.gz /tmp/hailort-*.whl; \
     test -f "/usr/local/lib/libhailort.so.${HAILORT_VERSION}"; \
     test "$(pip3 show hailort | sed -n 's/^Version: //p')" = "${HAILORT_VERSION}"
+
+# service: standard + 멀티프로세스 서비스 지원 libhailort.so (NPU를 Hailo Whisper STT와 공유)
+FROM standard AS service
+
+# 멀티프로세스 서비스 지원 libhailort.so로 교체하고, Frigate 감지기가 서비스 경유로 NPU를 쓰게 한다.
+# 서비스 소켓(/tmp/hailort_uds.sock)은 compose에서 호스트 hailort.service(4.23.0) 것을 마운트한다.
+COPY --from=hailort-service-build /out/ /usr/local/lib/
+RUN set -eux; \
+    ldconfig; \
+    f=/opt/frigate/frigate/detectors/plugins/hailo8l.py; \
+    sed -i 's/^\( *\)params.scheduling_algorithm = HailoSchedulingAlgorithm.ROUND_ROBIN$/&\n\1params.multi_process_service = True\n\1params.group_id = "SHARED"/' "$f"; \
+    grep -q 'params.multi_process_service = True' "$f"
