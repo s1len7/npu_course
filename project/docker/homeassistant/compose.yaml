@@ -1,18 +1,22 @@
 # Home Assistant (Pi 개발·테스트용). 운영 HA는 NAS에 있음
 # 실행: cd project/docker/homeassistant && docker compose up -d
-# 공식 권장은 network_mode: host지만, 교육장 LAN에 온보딩 전 HA가 노출되지 않도록
-# 로컬에만 열고 `tailscale serve --tcp 8123`으로 tailnet에만 노출한다.
+# 공식 권장대로 host network: LAN·tailnet 어디서나 :8123 접속 (관리자 계정 생성 완료 후 전환)
+# Bluetooth raw HCI 소켓은 호스트 네트워크 네임스페이스에서만 열린다
 
 services:
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
+    network_mode: host
     environment:
       - TZ=Asia/Seoul
     volumes:
       - ./config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
-    ports:
-      - "127.0.0.1:8123:8123"
+    # Bluetooth 전체 기능(어댑터 리셋, raw advertising) 요구 사항
+    # https://www.home-assistant.io/integrations/bluetooth/#additional-details-for-container
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
