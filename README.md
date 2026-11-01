@@ -220,6 +220,28 @@ hailo-detect-simple --input rpi --show-fps
 - v2.20.0은 HailoRT 4.24.0 기준이라 이 Pi(4.23.0)와 버전이 다릅니다.
 - 모델 목록 표에서 미리 컴파일된 HEF를 받으면 DFC 없이 Pi에서 바로 실행할 수 있습니다. (Pi에서 실제 실행은 미확인)
 
+### 3-8. 원격 접속: Tailscale
+
+교육장 밖에서도 Pi에 접속할 수 있도록 Tailscale이 호스트에 직접 설치되어 있습니다. Docker 컨테이너가 아니라 시스템 패키지입니다.
+
+| 항목 | 값 |
+| --- | --- |
+| 설치 방식 | 공식 apt 저장소 (`pkgs.tailscale.com/stable/debian trixie`), 패키지 `tailscale` 1.104.4 |
+| 서비스 | `tailscaled.service` 실행 중, 부팅 시 자동 시작 |
+| Tailscale 호스트 이름 | `npu-03` |
+| Tailscale IP | `100.119.172.74` (기기를 tailnet에서 지우지 않으면 유지) |
+| 설정 | Tailscale SSH·서브넷 라우팅·exit node·`tailscale serve` 모두 사용 안 함 |
+
+접속할 PC도 같은 tailnet에 로그인되어 있어야 합니다. 이 경우 교육장 IP 대신 Tailscale IP로 SSH 접속합니다.
+
+```bash
+ssh student@100.119.172.74
+```
+
+- VS Code Remote - SSH에서는 [3-2](#3-2-ssh-접속)의 2단계에서 `student@100.119.172.74`를 입력합니다.
+- 상태 확인: `tailscale status`, `tailscale ip -4`
+- Tailscale SSH(`--ssh`)는 꺼져 있으므로, 인증은 Pi의 OpenSSH(비밀번호 또는 키)로 합니다.
+
 ---
 
 ## 메모
