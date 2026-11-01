@@ -51,6 +51,8 @@ services:
           size: 512000000
     ports:
       - "8971:8971"        # 웹 UI (인증 사용)
+      # 인증 없는 내부 API: 로컬에만 열고 `tailscale serve --tcp 5000`으로 tailnet(HA)에만 노출
+      - "127.0.0.1:5000:5000"
       - "8554:8554"        # RTSP 재송출
       - "8555:8555/tcp"    # WebRTC
       - "8555:8555/udp"    # WebRTC
