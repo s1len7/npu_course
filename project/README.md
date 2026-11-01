@@ -19,7 +19,7 @@ Event Engine은 `project/.venv`를 쓴다. 시스템 Python(3.13)에는 패키�
 ### 처음 만들기
 
 ```bash
-cd ~/silent_npu/npu_course/project
+cd ~/silent_npu/project
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
@@ -27,7 +27,7 @@ python3 -m venv .venv
 ### 활성화 (activate)
 
 ```bash
-cd ~/silent_npu/npu_course/project
+cd ~/silent_npu/project
 source .venv/bin/activate
 ```
 
