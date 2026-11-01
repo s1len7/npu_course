@@ -34,8 +34,8 @@ Raspberry Pi 5 + AI HAT+ 현관 CCTV에서 사람과 택배의 움직임을 분�
 | Frigate 내장 HailoRT와 호스트 드라이버(`hailo-all` 5.1.1) 호환 | Frigate 0.18.2 내장 4.21.0은 불일치 → `docker/frigate/Dockerfile`로 4.23.0 교체, Hailo 감지기 동작 확인(추론 약 10ms, 2026-11-01). 교육 데모와 NPU 동시 사용은 미확인 |
 | 현관 카메라 | CSI Camera Module 3(imx708) 사용. MediaMTX 컨테이너가 RTSP로 변환(720p 10fps, 전체 화각 모드 `2304:1296`, 소프트웨어 H.264) |
 | 저장장치 종류·용량 | 미확인 |
-| MQTT broker 위치·인증 방식 | 미확인 |
-| HA 설치 형태·Frigate integration | 미확인 |
+| MQTT broker 위치·인증 방식 | NAS의 Mosquitto 컨테이너, Pi는 Tailscale로 접속. 연결 미완료 → `docs/IMPLEMENTATION_PLAN.md` MQTT 연결 TODO |
+| HA 설치 형태·Frigate integration | NAS에서 컨테이너로 운영 중. Frigate integration 미설치(MQTT 연결 후 진행) |
 
 호스트의 Hailo 패키지는 교육 실습과 공유하므로, 드라이버 변경·재설치는 사용자 확인 후에만 한다.
 

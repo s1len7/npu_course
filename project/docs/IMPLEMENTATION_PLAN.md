@@ -41,14 +41,26 @@ Pi 하드웨어·OS·Hailo 스택은 확인 완료(`../../AGENTS.md`). 남은 �
 산출물: §3 표의 미확인 항목 해소와 호환성 결론.
 
 ### Phase 1 — Frigate + Hailo PoC
-- Raspberry Pi 5에 Docker 및 Frigate 설치
-- Hailo detector 연결
-- 카메라 RTSP 연결
-- person detection / tracking 확인
-- Frigate MQTT event 수신 확인
-- snapshot 저장 확인
+- [x] Raspberry Pi 5에 Docker 및 Frigate 설치
+- [x] Hailo detector 연결 (HailoRT 4.23 교체 이미지, 추론 약 10~12ms)
+- [x] 카메라 연결 (CSI Camera Module 3 → MediaMTX RTSP)
+- [x] person detection / tracking 확인
+- [ ] Frigate MQTT event 수신 확인 → 아래 MQTT 연결 TODO
+- [x] snapshot 저장 확인
 
 통과 기준: CPU fallback이 아니라 Hailo detector가 실제 사용되고, 영상이 안정적으로 들어오며 person track과 snapshot이 확인된다.
+
+#### MQTT 연결 TODO
+broker는 NAS의 Mosquitto 컨테이너를 쓰고, Pi(`npu-03`)는 Tailscale로 NAS(`silent-nas-ts`)에 접속한다.
+
+- [x] Pi Tailscale 연결 (2026-11-01, 교육장 네트워크에서는 DERP 릴레이 경유)
+- [ ] NAS: tailnet에서 Mosquitto(1883)·HA(8123)에 닿게 하기. 2026-11-01 기준 `silent-nas-ts`의 모든 포트가 닫혀 있음. Tailscale 컨테이너를 host network로 바꾸거나 NAS 패키지 앱 사용
+- [ ] NAS: Tailscale ACL에서 `npu-03` → `silent-nas-ts` 접근 허용 확인
+- [ ] NAS: Frigate 전용 MQTT 계정 생성, Pi의 `docker/frigate/.env`(`FRIGATE_MQTT_USER`, `FRIGATE_MQTT_PASSWORD`)에 입력
+- [ ] Pi: `silent-nas-ts:1883` 접속·인증 확인
+- [ ] Pi: `config.yml`의 `mqtt` 활성화(`host: silent-nas-ts`), `frigate/events` 발행 확인
+- [ ] HA: Frigate integration 설치·연결 (HA → Frigate API 접근 경로도 함께 결정)
+- [ ] Event Engine 전용 MQTT 계정 생성 (Phase 4)
 
 ### Phase 2 — package detector PoC
 - 기본 모델의 label map과 실제 검출 결과 확인
