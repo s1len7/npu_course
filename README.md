@@ -14,7 +14,9 @@
 
 - **교육 안내:** https://event-us.kr/itsaict/event/136250
 - **과정 오픈채팅방:** https://open.kakao.com/o/gGnt49Ri (접속코드: 수신 이메일 참고<!-- `ITSA` -->)
-- 강의자료: https://buly.kr/Yhbi2n
+- 강의자료
+  - https://buly.kr/Yhbi2n
+  - https://drive.google.com/drive/folders/1C3t3EdHRBjS6obvIa70ETaPk2FNaKo_j?usp=sharing
 
 > 교육 시작 10분 전까지 입실. 건물 내 주차는 가능하지만 주차비는 지원되지 않습니다.
 
