@@ -104,7 +104,7 @@ Frigate 검출/추적을 대체하는 별도 tracking pipeline은 만들지 않�
 - 로그는 구조화하고 event ID/visit ID를 포함한다.
 - 모든 시간은 timezone-aware로 저장한다.
 - Event Engine은 실제 카메라 없이 JSON fixture/event replay로 테스트 가능해야 한다. 필수 시나리오는 SKILL.md의 replay 테스트 목록을 따른다.
-- 엔진은 표준 라이브러리만 쓴다(시스템 Python 3.13). 외부 패키지(MQTT 클라이언트 등)를 넣을 때는 확인 후 venv를 만든다.
+- 엔진 핵심(domain·engine·router)은 표준 라이브러리만 쓴다. 외부 패키지는 `project/.venv`에만 설치하고 `requirements.txt`에 버전을 고정한다(현재 `paho-mqtt==2.1.0`). 추가는 확인 후. venv 사용법은 `README.md`
 - 테스트 (`project/`에서): `python3 -m unittest discover -s tests -t .`
 - replay: `python3 -m parcel_event_engine.replay.event_replay tests/fixtures/<파일>.jsonl`
 
