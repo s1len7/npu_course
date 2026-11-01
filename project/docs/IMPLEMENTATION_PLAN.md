@@ -58,7 +58,7 @@ broker는 NAS의 Mosquitto 컨테이너를 쓰고, Pi(`npu-03`)는 Tailscale로 
 - [x] NAS: Tailscale ACL에서 `npu-03` → `silent-nas-ts` 접근 허용 확인 (실제 접속으로 확인, 관리 콘솔 정책은 미확인)
 - [ ] NAS: Frigate 전용 MQTT 계정 생성, Pi의 `docker/frigate/.env`(`FRIGATE_MQTT_USER`, `FRIGATE_MQTT_PASSWORD`)에 입력
 - [ ] Pi: `silent-nas-ts:1883` 접속·인증 확인
-- [ ] Pi: `config.yml`의 `mqtt` 활성화(`host: silent-nas-ts`), `frigate/events` 발행 확인
+- [ ] Pi: `config.yml`의 `mqtt` 활성화(`host: silent-nas-ts`), `frigate/events` 발행 확인 (2026-11-01: 익명으로 활성화, `frigate/available`=online 등 상태 토픽 수신 확인. `frigate/events`는 사람 검출 시 확인 필요)
 - [ ] HA: Frigate integration 설치·연결 (HA → Frigate API 접근 경로도 함께 결정)
 - [ ] HA: MQTT Statestream 통합으로 `person.*` 상태 발행 (Event Engine의 가족 판정 근거, 기본 토픽 `homeassistant/statestream/person/<이름>/state`)
 - [ ] Event Engine 전용 MQTT 계정 생성 → `project/engine.env`에 입력, `main.py` 실제 연결 확인

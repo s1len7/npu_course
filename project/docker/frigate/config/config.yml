@@ -1,9 +1,12 @@
 # Frigate 0.18.2 초안: Hailo-8L + CSI 카메라 1대 (MediaMTX 경유)
 # 참고: https://docs.frigate.video/configuration/reference
 
-# broker 위치·인증 방식 미확인 → 확인 후 활성화 (../../../AGENTS.md §3)
+# NAS Mosquitto (Tailscale 경유). 현재 broker가 익명 접속 허용 → 계정 생성 후 user/password 추가
+# (../../docs/IMPLEMENTATION_PLAN.md MQTT 연결 TODO)
 mqtt:
-  enabled: false
+  enabled: true
+  host: silent-nas-ts
+  port: 1883
 
 detectors:
   hailo:
