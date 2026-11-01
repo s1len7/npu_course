@@ -32,7 +32,7 @@ Raspberry Pi 5 + AI HAT+ 현관 CCTV에서 **사람의 방문을 인식해 역�
 | 항목 | 상태 |
 | --- | --- |
 | Docker | 설치됨: docker.io 26.1.5, compose 2.26.1, buildx 0.13.1. `student`는 `docker` 그룹에 추가됨(재로그인 전 세션은 `sg docker -c`) |
-| Frigate 내장 HailoRT와 호스트 드라이버(`hailo-all` 5.1.1) 호환 | Frigate 0.18.2 내장 4.21.0은 불일치 → `docker/frigate/Dockerfile`로 4.23.0 교체, Hailo 감지기 동작 확인(추론 약 10ms, 2026-11-01). NPU는 Frigate 단독 사용: HailoRT 멀티프로세스 서비스로 다른 추론(Hailo Whisper)과 동시 사용 시 `hailo_pci` 커널 경고 폭주·추론 실패(2026-11-02 시험, 폐기) |
+| Frigate 내장 HailoRT와 호스트 드라이버(`hailo-all` 5.1.1) 호환 | Frigate 0.18.2 내장 4.21.0은 불일치 → `docker/frigate/Dockerfile`로 4.23.0 교체, Hailo 감지기 동작 확인(추론 약 10ms, 2026-11-01). NPU는 Frigate 단독 사용: HailoRT 멀티프로세스 서비스로 다른 추론(Hailo Whisper)과 동시 사용 시 `hailo_pci` 커널 경고 폭주·추론 실패(2026-11-02 시험, 폐기). 같은 `find_vma` 커널 경고는 Frigate 단독 시작 때도 약 40건 한 번 발생하나 이후 없음·동작 정상(커널 6.18과 드라이버 4.23 호환 문제로 추정) |
 | 현관 카메라 | CSI Camera Module 3(imx708) 사용. MediaMTX 컨테이너가 RTSP로 변환(720p 10fps, 전체 화각 모드 `2304:1296`, 소프트웨어 H.264) |
 | 저장장치 종류·용량 | 미확인 |
 | MQTT broker 위치·인증 방식 | NAS의 Mosquitto 컨테이너, Pi는 Tailscale로 접속. 연결 미완료 → `docs/IMPLEMENTATION_PLAN.md` MQTT 연결 TODO |
