@@ -27,14 +27,14 @@ model:
 # MediaMTX 스트림을 go2rtc로 한 번만 받아서 재사용
 go2rtc:
   streams:
-    front_door:
+    classroom:
       - rtsp://host.docker.internal:8564/cam
 
 cameras:
-  front_door:
+  classroom:
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/front_door
+        - path: rtsp://127.0.0.1:8554/classroom
           input_args: preset-rtsp-restream
           roles:
             - detect
