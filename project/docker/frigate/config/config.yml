@@ -10,10 +10,9 @@ detectors:
     type: hailo8l
     device: PCIe
 
-# Hailo Model Zoo v2.17 YOLOv6n (Hailo-8L, HailoRT 4.23, 입력 640x640)
-# HEF는 git 제외 경로(config/model_cache)에 둔다. 원본: ~/npu_course/models/hailo/
+# Frigate 기본 모델: Model Zoo v2.14.0 hailo8l/yolov6n.hef (입력 640x640)
+# 320으로 두면 Hailo 플러그인이 640으로 다시 키워 디테일이 손실되므로 HEF 입력과 맞춘다
 model:
-  path: /config/model_cache/yolov6n_mz2.17_h8l.hef
   width: 640
   height: 640
   input_tensor: nhwc
