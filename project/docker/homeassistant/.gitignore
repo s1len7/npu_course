@@ -1,0 +1,2 @@
+# HA가 config/에 DB·인증 정보(.storage, secrets.yaml)를 만든다. 저장소에 올리지 않는다
+config/

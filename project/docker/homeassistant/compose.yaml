@@ -1,0 +1,18 @@
+# Home Assistant (Pi 개발·테스트용). 운영 HA는 NAS에 있음
+# 실행: cd project/docker/homeassistant && docker compose up -d
+# 공식 권장은 network_mode: host지만, 교육장 LAN에 온보딩 전 HA가 노출되지 않도록
+# 로컬에만 열고 `tailscale serve --tcp 8123`으로 tailnet에만 노출한다.
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Seoul
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    ports:
+      - "127.0.0.1:8123:8123"
