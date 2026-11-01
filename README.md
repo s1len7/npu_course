@@ -204,6 +204,22 @@ hailo-detect-simple --input rpi --show-fps
 - Pi에는 PyTorch와 Hailo 컴파일러(Dataflow Compiler)가 없습니다. 모델 학습·ONNX 변환은 PC에서, `.hef` 실행은 Pi에서 하는 구조로 보입니다. (ONNX → HEF 컴파일은 x86 Linux 필요)
 - numpy 버전이 환경마다 다릅니다: 시스템 2.2.4 / `venv_hailo_apps` 1.26.4.
 
+### 3-7. Hailo Model Zoo
+
+이 Pi(HailoRT 4.23.0)와 맞는 버전은 **v2.17** 태그입니다 (Dataflow Compiler 3.33.0 / HailoRT 4.23.0, Suite 2025-10 계열과 동일).
+
+- 저장소 (v2.17): https://github.com/hailo-ai/hailo_model_zoo/tree/v2.17
+- Hailo-8L 모델 목록: https://github.com/hailo-ai/hailo_model_zoo/tree/v2.17/docs/public_models/HAILO8L
+  - 분류: https://github.com/hailo-ai/hailo_model_zoo/blob/v2.17/docs/public_models/HAILO8L/HAILO8L_classification.rst
+  - 객체 탐지: https://github.com/hailo-ai/hailo_model_zoo/blob/v2.17/docs/public_models/HAILO8L/HAILO8L_object_detection.rst
+- 저장소 메인 (최신): https://github.com/hailo-ai/hailo_model_zoo
+- 릴리스 목록: https://github.com/hailo-ai/hailo_model_zoo/releases
+- Hailo Model Explorer: https://hailo.ai/products/hailo-software/model-explorer/
+
+- Hailo-8/8L은 **v2.x**, Hailo-10/15는 **v5.x** 계열입니다. v5.x는 Hailo-8L용이 아닙니다.
+- v2.20.0은 HailoRT 4.24.0 기준이라 이 Pi(4.23.0)와 버전이 다릅니다.
+- 모델 목록 표에서 미리 컴파일된 HEF를 받으면 DFC 없이 Pi에서 바로 실행할 수 있습니다. (Pi에서 실제 실행은 미확인)
+
 ---
 
 ## 메모
