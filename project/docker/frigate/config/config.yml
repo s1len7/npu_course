@@ -60,3 +60,4 @@ record:
 version: 0.18-0
 detect:
   enabled: true
+  fps: 10
