@@ -1,3 +1,5 @@
+> 이 파일의 규칙은 silent_sdk [공통 규칙](https://github.com/s1len7/silent_sdk/blob/main/AGENTS.md)에 더해 적용됨
+
 # AGENTS.md
 
 이 저장소에서 작업하는 에이전트를 위한 지침. 상세 배경은 `README.md` 참고.
