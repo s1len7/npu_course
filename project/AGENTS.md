@@ -104,6 +104,9 @@ Frigate 검출/추적을 대체하는 별도 tracking pipeline은 만들지 않�
 - 로그는 구조화하고 event ID/visit ID를 포함한다.
 - 모든 시간은 timezone-aware로 저장한다.
 - Event Engine은 실제 카메라 없이 JSON fixture/event replay로 테스트 가능해야 한다. 필수 시나리오는 SKILL.md의 replay 테스트 목록을 따른다.
+- 엔진은 표준 라이브러리만 쓴다(시스템 Python 3.13). 외부 패키지(MQTT 클라이언트 등)를 넣을 때는 확인 후 venv를 만든다.
+- 테스트 (`project/`에서): `python3 -m unittest discover -s tests -t .`
+- replay: `python3 -m parcel_event_engine.replay.event_replay tests/fixtures/<파일>.jsonl`
 
 ## 11. 완료 기준
 

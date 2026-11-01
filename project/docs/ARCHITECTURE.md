@@ -108,33 +108,24 @@ NVR, detector, tracker, zones, MQTT, snapshot/recording 기능을 맡긴다. 직
 ## 6. Event Engine 모듈 경계
 
 ```text
-parcel_event_engine/
-  adapters/
-    frigate_mqtt.py
-    frigate_api.py
-    home_assistant.py
+parcel_event_engine/            # 구현됨 (표준 라이브러리만 사용)
+  adapters/frigate_mqtt.py      # frigate/events payload → Observation
   domain/
-    observations.py
-    person_roles.py
-    parcel_identity.py
-    parcel_state.py
-    event_rules.py
-  storage/
-    repository.py
-    sqlite.py
-  messaging/
-    mqtt_publisher.py
-  replay/
-    event_replay.py
-  config.py
-  main.py
+    observations.py             # Observation, PresenceChange
+    visits.py                   # 방문 묶음 (grace·stale·재시작 처리)
+    event_rules.py              # 역할 추정·의심 행동 판정, 이벤트 payload
+  engine.py                     # 입력 처리·시간 진행·중복 제거 (네트워크 I/O 없음)
+  config.py                     # 기준값 (임시값, 실측 후 조정)
+  replay/event_replay.py        # JSONL fixture 재생 CLI
 tests/
+  helpers.py, test_visits.py    # SKILL.md 현재 범위 replay 시나리오
   fixtures/
-  test_delivery.py
-  test_multi_parcel.py
-  test_return.py
-  test_removal.py
-  test_recovery.py
+
+# 예정
+#   adapters/home_assistant.py   HA 재실 정보 → PresenceChange
+#   messaging/                   MQTT 구독·발행 (라이브러리 선택 후)
+#   storage/                     SQLite 상태 복구
+#   main.py                      서비스 실행
 ```
 
 Frigate 원본 schema는 adapter에서만 다루고 domain 로직은 표준 observation만 받는다.
