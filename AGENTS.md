@@ -93,7 +93,7 @@ python day1\test.py
 
 - 접속: VS Code Remote - SSH, 호스트 `rpi5` (`~/.ssh/config`에 정의). IP가 바뀌면 `hostname -I`로 확인 후 config의 `HostName`만 수정.
 - Pi 환경: Raspberry Pi OS Trixie(64-bit), Python 3.13.5(시스템), HailoRT 4.23.0, `hailo-all` 5.1.1, TAPPAS core 5.1.0, Hailo Apps `~/hailo-apps`.
-- 원격 접속: Tailscale 1.104.4가 호스트에 apt 패키지로 설치됨(`tailscaled` 상시 실행, Docker 아님). tailnet 이름 `npu-03`, IP `100.119.172.74`. Tailscale SSH·서브넷 라우팅·exit node는 꺼져 있고, `tailscale serve --tcp 5000`이 Frigate 내부 API를 tailnet에만 노출한다(HA integration용, 끄기: `sudo tailscale serve --tcp=5000 off`). 원격 접속 경로이므로 Docker로 옮기거나 `tailscaled`를 중지·재설정하지 않는다(필요하면 먼저 사용자 확인). 상세는 `README.md` 3-8.
+- 원격 접속: Tailscale 1.104.4가 호스트에 apt 패키지로 설치됨(`tailscaled` 상시 실행, Docker 아님). tailnet 이름 `npu-03`, IP `100.119.172.74`. Tailscale SSH·서브넷 라우팅·exit node는 꺼져 있고, `tailscale serve`가 `127.0.0.1`에만 publish된 포트를 tailnet에만 노출한다: `5000` Frigate 내부 API(NAS HA integration용), `8123` Pi의 Home Assistant(`project/docker/homeassistant`). 끄기: `sudo tailscale serve --tcp=<포트> off`. 원격 접속 경로이므로 Docker로 옮기거나 `tailscaled`를 중지·재설정하지 않는다(필요하면 먼저 사용자 확인). 상세는 `README.md` 3-8.
 - `npu_setup.sh`는 일반 사용자로 `bash ~/npu_setup.sh {1|2|3}` 형태로 실행한다. `sudo bash`로 실행하지 않는다.
 - 이미 3단계 설치가 끝난 장비에서는 설치 스크립트를 재실행하지 않고 `npu_check*.sh`만 사용한다.
 - `[PASS]`는 명령/파일/장치 확인 통과일 뿐이며, 영상 품질·탐지 결과는 사람이 직접 확인해야 한다.

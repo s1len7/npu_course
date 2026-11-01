@@ -230,7 +230,7 @@ hailo-detect-simple --input rpi --show-fps
 | 서비스 | `tailscaled.service` 실행 중, 부팅 시 자동 시작 |
 | Tailscale 호스트 이름 | `npu-03` |
 | Tailscale IP | `100.119.172.74` (기기를 tailnet에서 지우지 않으면 유지) |
-| 설정 | Tailscale SSH·서브넷 라우팅·exit node 사용 안 함. `tailscale serve --tcp 5000`으로 Frigate 내부 API(`127.0.0.1:5000`)를 tailnet에만 노출 (NAS Home Assistant Frigate integration용) |
+| 설정 | Tailscale SSH·서브넷 라우팅·exit node 사용 안 함. `tailscale serve`로 tailnet에만 노출: `5000` → Frigate 내부 API(NAS Home Assistant Frigate integration용), `8123` → Pi의 Home Assistant(`project/docker/homeassistant`). 둘 다 Docker에서는 `127.0.0.1`에만 publish |
 
 접속할 PC도 같은 tailnet에 로그인되어 있어야 합니다. 이 경우 교육장 IP 대신 Tailscale IP로 SSH 접속합니다.
 
