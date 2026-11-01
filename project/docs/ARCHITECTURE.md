@@ -82,6 +82,8 @@ NVR, detector, tracker, zones, MQTT, snapshot/recording 기능을 맡긴다. 직
 
 ## 5. 모델 전략
 
+> 현재는 1단계(기본 모델로 사람 검출)만 진행한다. 2·3단계(택배 검출)는 보류이며 조사 결과는 `IMPLEMENTATION_PLAN.md`의 택배 검출 TODO에 있다.
+
 ### 1단계: 기본 Hailo 모델
 - Frigate 기본 Hailo-8L YOLOv6n을 사용
 - 사람 검출, tracking, zone 통과부터 검증

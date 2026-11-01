@@ -4,6 +4,53 @@
 
 Frigate가 발행한 사람/택배 추적 이벤트를 해석해 택배별 상태와 현관 이벤트를 판정한다. 이 Skill은 Event Engine의 설계·구현·테스트 시 공통 규칙으로 사용한다.
 
+> **현재 범위 (2026-11-01):** 사람 방문 인식과 역할 추정만 다룬다. 아래 "현재 범위: 사람 방문 판정"을 따른다.
+> 택배 관련 절(Parcel identity, 권장 상태 모델, 이벤트 판정 규칙, 다중 택배, 택배 replay 테스트)은 **보류**이며, `docs/IMPLEMENTATION_PLAN.md`의 택배 검출 TODO를 재개할 때 적용한다.
+
+## 현재 범위: 사람 방문 판정
+
+### 방문(visit)
+- Frigate `person` track이 현관 zone에 들어온 시점부터 모든 관련 track이 사라질 때까지를 하나의 `visit_id`로 묶는다.
+- 가림·재진입으로 track ID가 바뀌어도 짧은 공백(grace period, 측정 후 결정) 안이면 같은 방문으로 본다.
+- 방문마다 기록: 시작·종료 시각, 머문 시간, 통과한 zone 순서, 동시 인원 수, 대표 스냅샷
+
+### 역할 근거
+| 역할 | 근거 (여러 개가 맞을수록 certainty 상승) |
+|---|---|
+| `household` | HA 재실 정보에서 가족이 같은 시각 전후로 귀가·외출로 바뀜, 문 안쪽 zone으로 들어감 |
+| `courier_likely` | 문 앞까지 왔다가 짧게 머물고 집 안으로 들어가지 않고 떠남, 주간 방문 |
+| `unknown` | 사람은 확인되나 위 근거가 없음 |
+| `unclassified` | 관측이 너무 짧거나 가려져 판단 불가 |
+
+### 의심 행동 (역할과 별도 판정)
+- 현관 zone에 기준 시간 이상 머묾
+- 야간 시간대 방문
+- 가족 부재(HA 재실 정보) 중 방문, 짧은 간격의 반복 방문
+- 기준값(시간, 시간대, 간격)은 설정으로 두고 실측 후 정한다.
+
+### 이벤트 종류
+| `event_type` | 조건 |
+|---|---|
+| `household_arrival` / `household_departure` | `household` 근거가 있는 방문 |
+| `courier_visit_likely` | `courier_likely` 근거가 있는 방문 |
+| `unknown_visitor` | `unknown` 방문 |
+| `suspicious_behavior` | 의심 행동 판정. 역할은 함께 기록하되 특정인을 단정하지 않는다 |
+| `visit_uncertain` | 근거가 서로 충돌하거나 관측이 부족함 |
+
+payload는 아래 "MQTT 출력 예시"와 같은 형식을 쓰되, `parcel_ids` 대신 `dwell_seconds`, `zones`, `person_count`, `suspicious_reasons`를 넣는다.
+
+### 필수 replay 테스트 (현재 범위)
+1. 가족 한 명이 귀가해 문 안으로 들어감 (HA 재실 정보 변화 포함)
+2. 가족이 외출함
+3. 방문자가 문 앞에 짧게 머물고 떠남 (택배기사 추정)
+4. 미확인 인물이 짧게 지나감
+5. 미확인 인물이 기준 시간 이상 머묾
+6. 야간 방문
+7. 가족 부재 중 반복 방문
+8. 가림으로 track ID가 바뀌었다가 같은 사람이 다시 보임 (같은 방문 유지)
+9. 가족과 방문자가 동시에 있음
+10. Frigate 재시작, 동일 MQTT 메시지 중복 수신
+
 ## 입력 관측값
 
 Frigate adapter는 원본 MQTT/API payload를 내부 표준 형식으로 변환한다.
