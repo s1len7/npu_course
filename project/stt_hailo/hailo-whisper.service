@@ -1,0 +1,16 @@
+# 설치: sudo cp hailo-whisper.service /etc/systemd/system/ && sudo systemctl enable --now hailo-whisper
+[Unit]
+Description=Hailo-8L Whisper Wyoming STT (127.0.0.1:10301)
+Requires=hailort.service
+After=network-online.target hailort.service
+
+[Service]
+User=student
+WorkingDirectory=/home/student/silent_npu/project/stt_hailo
+Environment=HAILORT_LOGGER_PATH=NONE
+ExecStart=/home/student/silent_npu/project/.venv-stt/bin/python -I server.py --uri tcp://127.0.0.1:10301 --language ko
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
