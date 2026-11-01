@@ -1,0 +1,32 @@
+# MediaMTX: CSI Camera Module 3(imx708) → RTSP
+# 적지 않은 항목은 MediaMTX 기본값을 따른다.
+# 참고: https://github.com/bluenviron/mediamtx/blob/main/mediamtx.yml
+
+logLevel: info
+
+# host network로 실행하므로 Frigate(8554)와 겹치지 않게 RTSP 포트를 바꾼다
+rtspAddress: :8564
+rtspTransports: [tcp]
+
+# 쓰지 않는 서버는 끈다 (포트 점유·공격면 축소)
+rtmp: false
+hls: false
+webrtc: false
+srt: false
+moq: false
+
+paths:
+  cam:
+    source: rpiCamera
+    # 720p를 그냥 요청하면 1536x864(가운데 잘린) 모드가 선택되므로 전체 화각 모드를 강제한다
+    rpiCameraMode: "2304:1296"
+    rpiCameraWidth: 1280
+    rpiCameraHeight: 720
+    rpiCameraFPS: 10
+    # Pi 5에는 H.264 하드웨어 인코더가 없음 (720p10 측정: 인코딩 약 28%, 1코어 기준)
+    rpiCameraCodec: softwareH264
+    # 2초마다 키프레임 (Frigate 녹화 구간 분할·재접속 지연 감소)
+    rpiCameraIDRPeriod: 20
+    rpiCameraBitrate: 2000000
+    # 고정 설치 후 초점이 정해지면 manual + rpiCameraLensPosition으로 바꾼다
+    rpiCameraAfMode: continuous

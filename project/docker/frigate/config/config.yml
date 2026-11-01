@@ -1,0 +1,56 @@
+# Frigate 0.18.2 초안: Hailo-8L + CSI 카메라 1대 (MediaMTX 경유)
+# 참고: https://docs.frigate.video/configuration/reference
+
+# broker 위치·인증 방식 미확인 → 확인 후 활성화 (../../../AGENTS.md §3)
+mqtt:
+  enabled: false
+
+detectors:
+  hailo:
+    type: hailo8l
+    device: PCIe
+
+# Frigate 공식 문서의 Hailo-8L 기본 모델(YOLOv6n) 설정
+model:
+  width: 320
+  height: 320
+  input_tensor: nhwc
+  input_pixel_format: rgb
+  input_dtype: int
+  model_type: yolo-generic
+  labelmap_path: /labelmap/coco-80.txt
+
+# MediaMTX 스트림을 go2rtc로 한 번만 받아서 재사용
+go2rtc:
+  streams:
+    front_door:
+      - rtsp://host.docker.internal:8564/cam
+
+cameras:
+  front_door:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/front_door
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+    detect:
+      # 0.18.2는 기본값이 false (frigate/config/camera/detect.py)
+      enabled: true
+      width: 1280
+      height: 720
+      fps: 5
+    # COCO 기본 모델에는 택배 클래스가 없음. 택배 검출은 Phase 2에서 별도 검증
+    objects:
+      track:
+        - person
+
+snapshots:
+  enabled: true
+  retain:
+    default: 7
+
+# 녹화는 저장장치·보존 정책 결정 전까지 끔
+record:
+  enabled: false
+version: 0.18-0

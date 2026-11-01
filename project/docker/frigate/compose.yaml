@@ -1,0 +1,56 @@
+# Frigate + Hailo-8L (HailoRT 4.23 교체 이미지) + MediaMTX(CSI 카메라 → RTSP)
+#
+# 실행: cd project/docker/frigate && cp .env.example .env && docker compose up -d --build
+# 카메라는 한 번에 한 프로세스만 쓸 수 있다. 교육 실습(rpicam-*, hailo-detect --input rpi) 전에는
+# `docker compose stop mediamtx`로 카메라를 놓아 줄 것.
+# 미확인: 기본 HEF 로드, 호스트 hailort.service와의 장치 공유 → ../../AGENTS.md §3
+
+services:
+  mediamtx:
+    container_name: mediamtx
+    image: bluenviron/mediamtx:1.21.3-rpi
+    restart: unless-stopped
+    # rpiCamera 소스 요구 사항 (MediaMTX 공식 문서)
+    network_mode: host
+    privileged: true
+    tmpfs:
+      - /dev/shm:exec
+    volumes:
+      - /run/udev:/run/udev:ro
+      - ./mediamtx.yml:/mediamtx.yml:ro
+
+  frigate:
+    container_name: frigate
+    build:
+      context: .
+      args:
+        FRIGATE_VERSION: "0.18.2"
+        HAILORT_VERSION: "4.23.0"
+    image: localhost/frigate-hailort4.23:0.18.2
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+      - mediamtx
+    # host network인 MediaMTX에 이름으로 접근
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # 카메라 수·해상도에 따라 조정 (공식 설치 문서의 shm 계산식 참고)
+    shm_size: "256mb"
+    devices:
+      - /dev/hailo0:/dev/hailo0
+    env_file:
+      - .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config:/config
+      - ${FRIGATE_MEDIA_DIR:-./storage}:/media/frigate
+      # 녹화 세그먼트 캐시: 교육 실습과 RAM을 나눠 쓰므로 작게 시작
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 512000000
+    ports:
+      - "8971:8971"        # 웹 UI (인증 사용)
+      - "8554:8554"        # RTSP 재송출
+      - "8555:8555/tcp"    # WebRTC
+      - "8555:8555/udp"    # WebRTC

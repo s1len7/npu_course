@@ -1,0 +1,5 @@
+.env
+storage/
+# Frigate가 config/에 DB·모델 캐시를 만든다. 설정 파일만 추적
+config/*
+!config/config.yml
