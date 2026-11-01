@@ -242,6 +242,19 @@ ssh student@100.119.172.74
 - 상태 확인: `tailscale status`, `tailscale ip -4`
 - Tailscale SSH(`--ssh`)는 꺼져 있으므로, 인증은 Pi의 OpenSSH(비밀번호 또는 키)로 합니다.
 
+### 3-9. 실습 전에 Frigate 끄기 (NPU·카메라 점유)
+
+이 Pi에서는 택배 CCTV 프로젝트의 Frigate(Docker)가 상시 실행되며 **NPU(Hailo-8L)와 카메라를 혼자 씁니다.** 켜져 있으면 교육 실습의 Hailo 데모나 `rpicam-*`이 NPU·카메라를 열지 못합니다.
+
+```bash
+cd ~/silent_npu/project/docker/frigate
+docker compose stop frigate mediamtx    # 실습 전
+docker compose start mediamtx frigate   # 실습 후
+```
+
+- NPU 실패 증상: `HAILO_OUT_OF_PHYSICAL_DEVICES` (Hailo Whisper로 확인, 교육 데모에서는 미확인)
+- HailoRT 공유 서비스로 Frigate와 NPU를 같이 쓰는 방법은 시험했지만, 동시 추론 시 드라이버 오류가 나서 쓰지 않습니다 (2026-11-02, `project/AGENTS.md` §3).
+
 ---
 
 ## 메모
