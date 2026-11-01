@@ -1,5 +1,0 @@
-# .venv-stt 전용 (python3 -m venv --system-site-packages: 시스템 hailo_platform 4.23.0 사용)
-# torch는 CPU 빌드: pip install --index-url https://download.pytorch.org/whl/cpu torch==2.15.0
-torch==2.15.0
-transformers==5.22.1
-wyoming==1.10.2
