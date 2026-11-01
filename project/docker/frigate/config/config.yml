@@ -43,7 +43,7 @@ cameras:
       enabled: true
       width: 1280
       height: 720
-      fps: 5
+      fps: 10
     # COCO 기본 모델에는 택배 클래스가 없음. 택배 검출은 Phase 2에서 별도 검증
     objects:
       track:
