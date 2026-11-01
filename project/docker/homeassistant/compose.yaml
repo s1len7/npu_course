@@ -20,3 +20,27 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
+
+  # 음성 인식(STT). HA Wyoming 통합에서 127.0.0.1:10300으로 연결
+  # Pi 5 CPU에서 한국어 정확도·속도 균형으로 base-int8 (tiny-int8은 빠르지만 한국어 오인식이 많음)
+  whisper:
+    container_name: whisper
+    image: rhasspy/wyoming-whisper:3.8.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:10300:10300"
+    volumes:
+      - ./whisper/data:/data
+    command: ["--language", "ko", "--model", "base-int8"]
+
+  # 음성 합성(TTS), 한국어 음성. HA Wyoming 통합에서 127.0.0.1:10200으로 연결
+  # `*-omnivoice` 태그는 amd64 전용이라 Pi(arm64)에서 쓰지 않는다
+  piper:
+    container_name: piper
+    image: rhasspy/wyoming-piper:2.5.2
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:10200:10200"
+    volumes:
+      - ./piper/data:/data
+    command: ["--voice", "ko_KR-kss-medium"]
