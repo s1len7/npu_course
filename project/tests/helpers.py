@@ -37,7 +37,7 @@ def track(track_id: str, base: datetime, start: float, end: float, path: list[st
             "type": phase,
             "before": {},
             "after": {
-                "id": track_id, "camera": "front_door", "label": "person",
+                "id": track_id, "camera": "classroom", "label": "person",
                 "frame_time": at.timestamp(), "start_time": start_ts,
                 "end_time": end_ts if phase == "end" else None,
                 "entered_zones": list(entered), "current_zones": [zone],

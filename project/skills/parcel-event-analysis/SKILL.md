@@ -58,7 +58,7 @@ Frigate adapter는 원본 MQTT/API payload를 내부 표준 형식으로 변환�
 ```json
 {
   "observed_at": "2026-11-01T12:00:00+09:00",
-  "camera": "front_door",
+  "camera": "classroom",
   "frigate_event_id": "event-identifier",
   "track_id": "track-identifier",
   "label": "person",
@@ -218,7 +218,7 @@ present
   "event_id": "uuid",
   "event_type": "parcel_delivered",
   "timestamp": "2026-11-01T12:00:00+09:00",
-  "camera": "front_door",
+  "camera": "classroom",
   "visit_id": "visit-uuid",
   "parcel_ids": ["parcel-uuid-1", "parcel-uuid-2"],
   "person_track_id": "person-track-id",

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class EngineConfig:
-    camera: str = "front_door"
+    camera: str = "classroom"
     # Frigate zone 이름 (zone 설정 후 맞출 것)
     porch_zone: str = "porch"
     door_zone: str = "door"
