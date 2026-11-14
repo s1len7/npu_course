@@ -1,0 +1,10 @@
+# 권한
+chmod -R 777 \
+~/hailo_build/shared_with_docker/step14
+
+chmod -R 777 \
+~/hailo_build/shared_with_docker
+
+docker start -ai hailo8_ai_sw_suite_2025-10_container
+
+./hailo_ai_sw_suite_docker_run.sh --resume
