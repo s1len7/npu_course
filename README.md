@@ -36,6 +36,7 @@
 - [1. PC 실습 환경](#1-pc-실습-환경)
 - [2. IDE](#2-ide)
 - [3. 실습 장비: Raspberry Pi 5 + AI HAT+](#3-실습-장비-raspberry-pi-5--ai-hat)
+- [4. 실습 정리 (day2~day4)](#4-실습-정리-day2day4)
 - [메모](#메모)
 
 ---
@@ -254,6 +255,55 @@ docker compose start mediamtx frigate   # 실습 후
 
 - NPU 실패 증상: `HAILO_OUT_OF_PHYSICAL_DEVICES` (Hailo Whisper로 확인, 교육 데모에서는 미확인)
 - HailoRT 공유 서비스로 Frigate와 NPU를 같이 쓰는 방법은 시험했지만, 동시 추론 시 드라이버 오류가 나서 쓰지 않습니다 (2026-11-02, `project/AGENTS.md` §3).
+
+---
+
+## 4. 실습 정리 (day2~day4)
+
+`npu_lec/day2~day4`의 실습 코드를 기준으로 정리했습니다. 강의 자료(PDF·docx)의 본문과 수치는 반영하지 않았습니다. 스크립트 상당수는 강의 원본 경로(`C04`, `C06`, `C08`, `D:\NPU_SHARE`)를 그대로 쓰므로 이 저장소에서 바로 실행되지는 않습니다.
+
+### 4-1. Day 2: 모델 준비와 ONNX 변환
+
+| 파일 | 내용 |
+| --- | --- |
+| `02_size_typeEx.py` | 이미지 RGB 변환 → 224 resize → float32/255 → HWC→CHW → tensor 변환 |
+| `modelLoadEx.py` | MobileNetV2(ImageNet) 로드, 가중치 enum과 CPU/CUDA 확인 |
+| `modelLoadEx2.py` | 전처리 → 추론 → softmax → top-1 class 확인 |
+| `modelLoadEx3.py` | 단일 이미지 CPU 추론 시간 측정 |
+| `model_onnxEx.py` | ONNX export(`dynamo=True`), 변환 시간·파일 용량·checker 확인 |
+| `export_onnxEx.py` | ONNX export 최소 예제 |
+| `load_onnxEx.py` | ONNX IR/producer, 입출력 shape, node·initializer 수 확인 |
+| `warmupEx*.py` | warm-up 후 반복 추론 지연 측정 |
+| `pipeline_profileEx.py` | load/preprocess/infer/postprocess/total 단계별 ms 측정(100회) |
+| `examEx1.py` | 이미지별 추론·top-1 프로파일 CSV 저장(10회 반복) |
+
+### 4-2. Day 3: ONNX 구조 분석과 캘리브레이션
+
+| 파일 | 내용 |
+| --- | --- |
+| `onnx_runtimeEx.py` | ONNX Runtime CPU 세션 생성, 입출력과 추론 결과 확인 |
+| `graph_infoEx.py` | 입출력 shape, 앞 20개 node, Conv attribute 출력 |
+| `graph_total_infoEx.py` | 전체 Conv의 group·kernel·weight shape 분석, Standard/Pointwise와 Depthwise 분류, `conv_analysis.csv`·`conv_summary.csv` 저장 |
+| `conv_groupEx.py` | Conv별 group 값 출력 |
+| `calibrationEx.py` | MobileNetV2 `features[0/3/7/14/18]` activation의 min/max를 100장으로 캘리브레이션 |
+| `conversion_validationEx.py` | 원본·flip·밝기·0·랜덤 입력에 대한 PyTorch vs ONNX Runtime 출력 비교 |
+| `precision_analysisEx.py` | 파라미터 수, FP32/FP16/INT8 예상·실제 메모리, 양자화 오차 계산 |
+
+### 4-3. Day 4: 전이학습과 ONNX/Hailo 검증
+
+| 파일 | 내용 |
+| --- | --- |
+| `a02_train_catdog.py` | ResNet18 전이학습. backbone freeze, `fc` 512→2 교체, OxfordIIITPet binary-category(Cat/Dog), 224px·ImageNet 정규화, 5 epoch·batch 32·Adam 1e-3, 8:2 split(seed 42), best-val `.pth`와 history CSV, validation 샘플 10개 예측 |
+| `a03_export_validate.py` | `.pth` 로드 → ONNX export(opset 13, 고정 `[1,3,224,224]`, `dynamo=False`) → checker·graph 정보 → ORT CPU 추론 → PyTorch/ONNX logit 오차(rtol/atol 1e-4)·softmax 확률·top-1 일치 검증 CSV |
+| `c17_cpu_npu_benchmark.py` | `mobilenet_v1.hef`를 Hailo-8L(PCIe)에서 추론해 top-5와 CSV 출력. ImageNet 1001-class offset 보정 |
+| `*.docx`, `*.pdf` | HEF parse/optimize/deploy, Hailo-8L benchmark·온도 실습 자료. HEF 컴파일은 Docker suite(`hailo8_ai_sw_suite_2025-10_container`) 절차로 진행 |
+| `data.zip` | OxfordIIITPet 데이터셋. 용량(1.55GB) 때문에 Git에는 포함하지 않음 |
+
+### 4-4. 실행 시 주의
+
+- day2/day3은 `C04` 이미지, `C06/output/mobilenet_v2.onnx`, `C08/output`, `D:\NPU_SHARE\calib\mobilenet` 경로를 전제로 합니다. 캘리브레이션 이미지는 `day3/mobilenet/`에 있습니다.
+- day4는 `data.zip`을 `npu_lec/day4`에 풀고 `a02 → a03` 순서로 실행합니다. `a03`은 `input/a02_resnet18_catdog_best.pth`가 필요합니다.
+- `c17`은 Pi에서 `hailo_platform`이 필요하며, Frigate가 NPU를 쓰고 있으면 [3-9](#3-9-실습-전에-frigate-끄기-npu카메라-점유)를 먼저 적용합니다.
 
 ---
 
